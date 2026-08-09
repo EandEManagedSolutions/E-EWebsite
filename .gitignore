@@ -1,0 +1,6 @@
+# Local tooling
+.claude/
+
+# Windows junk
+Thumbs.db
+desktop.ini
