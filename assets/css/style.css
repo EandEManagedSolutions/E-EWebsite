@@ -1,0 +1,1359 @@
+/* ==========================================================================
+   E&E Managed Solutions
+   --------------------------------------------------------------------------
+   Design direction: "Under the canopy."
+
+   Every managed-services site in the category is navy blue. This one is built
+   from the colours of a live oak at dusk -- deep green-black shade, warm bark,
+   and the gold of backlit Spanish moss. The page alternates between SHADE
+   (dark, atmospheric, persuasive) and CLEARING (light linen, informational),
+   the rhythm of walking a live oak alley.
+
+   Type does the brand's two jobs: Fraunces (a warm, slightly wonky old-style
+   serif, used only for headlines) carries the Southern warmth; JetBrains Mono
+   carries the technical credibility. Karla sits between them and does the
+   reading.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TOKENS
+   ========================================================================== */
+
+:root {
+  /* --- Colour: the canopy ------------------------------------------------ */
+  --shade:        #121A15;  /* deepest canopy shade -- the page ground       */
+  --understory:   #1A2620;  /* raised surface on dark                        */
+  --thicket:      #24332B;  /* borders + hover surfaces on dark              */
+  --sage:         #A9BCA2;  /* muted body text on dark        8.8:1 on shade */
+  --lantern:      #DFAF66;  /* backlit moss gold -- accent    8.8:1 on shade */
+  --lantern-ink:  #7A5623;  /* the same gold, dark enough     5.9:1 on linen */
+  --bark:         #6E5238;  /* warm brown, used sparingly                    */
+
+  /* --- Colour: the clearing --------------------------------------------- */
+  --linen:        #F5F1E7;  /* light section ground                          */
+  --linen-dim:    #EAE4D5;  /* alt surface within light sections             */
+  --ink:          #16201A;  /* text on linen                 14.8:1 on linen */
+  --ink-soft:     #4A5850;  /* muted text on linen            6.7:1 on linen */
+  --rule:         #D5CDBA;  /* hairline on linen                             */
+
+  --danger:       #B3402F;
+
+  /* --- Type -------------------------------------------------------------- */
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --body:    "Karla", "Segoe UI", system-ui, sans-serif;
+  --mono:    "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* Fluid type scale. Clamped so it never collapses on a phone or runs away
+     on a 27" monitor. */
+  --t-hero:  clamp(2.6rem, 1.55rem + 4.55vw, 5.15rem);
+  --t-h2:    clamp(2.00rem, 1.28rem + 3.10vw, 3.75rem);
+  --t-h3:    clamp(1.40rem, 1.18rem + 0.95vw, 1.95rem);
+  --t-lead:  clamp(1.09rem, 1.00rem + 0.42vw, 1.35rem);
+  --t-body:  1.0625rem;
+  --t-small: 0.9375rem;
+  --t-mono:  0.7500rem;
+
+  /* --- Space ------------------------------------------------------------- */
+  --s-1: 0.5rem;
+  --s-2: 0.875rem;
+  --s-3: 1.25rem;
+  --s-4: 2rem;
+  --s-5: 3rem;
+  --s-6: 4.5rem;
+  --s-7: 7rem;
+  --s-section: clamp(4.5rem, 3rem + 6.5vw, 8.5rem);
+
+  --shell:  1240px;
+  --narrow: 720px;
+
+  /* --- Form ------------------------------------------------------------- */
+  --r-sm: 3px;
+  --r-md: 5px;
+  --r-lg: 8px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur:  240ms;
+}
+
+/* ==========================================================================
+   2. BASE
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+body {
+  margin: 0;
+  background: var(--shade);
+  color: var(--linen);
+  font-family: var(--body);
+  font-size: var(--t-body);
+  line-height: 1.65;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; }
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -0.021em;
+  /* Fraunces' variable axes. SOFT rounds the terminals -- that is where the
+     warmth comes from. WONK is left OFF here: it swaps in swash forms, and
+     the swash ampersand is unreadable at heading size ("IT & helpdesk" turns
+     into a symbol). WONK is switched on only for the italic hero phrase,
+     where it is set large enough to read and does real work. */
+  font-variation-settings: "SOFT" 34, "WONK" 0;
+  text-wrap: balance;
+}
+
+p { margin: 0; text-wrap: pretty; }
+
+/* `ol` is included deliberately: the process list is a real <ol> for semantics
+   and screen readers, but it draws its own numerals via a CSS counter. Without
+   this the native marker doubles up with the counter -- "1.01", "2.02". */
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+:focus-visible {
+  outline: 2.5px solid var(--lantern);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.clearing :focus-visible { outline-color: var(--lantern-ink); }
+
+::selection { background: var(--lantern); color: var(--shade); }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  padding: var(--s-2) var(--s-3);
+  background: var(--lantern);
+  color: var(--shade);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  text-decoration: none;
+}
+
+.skip-link:focus { left: var(--s-3); top: var(--s-3); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   3. LAYOUT PRIMITIVES
+   ========================================================================== */
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 0.6rem + 2.6vw, 2.5rem);
+}
+
+.section { padding-block: var(--s-section); position: relative; }
+
+/* The two grounds. Every section declares which world it lives in, and the
+   text colours follow from that -- no per-element overrides needed. */
+.shade {
+  background: var(--shade);
+  color: var(--linen);
+}
+
+.clearing {
+  background: var(--linen);
+  color: var(--ink);
+}
+
+.clearing .lead,
+.clearing .card-body { color: var(--ink-soft); }
+
+.understory { background: var(--understory); }
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.6;
+  color: var(--sage);
+  max-width: 54ch;
+}
+
+/* ==========================================================================
+   4. SHARED COMPONENTS
+   ========================================================================== */
+
+/* --- Eyebrow: the mono voice ------------------------------------------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-3);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lantern);
+}
+
+.clearing .eyebrow { color: var(--lantern-ink); }
+
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  flex: none;
+  opacity: 0.65;
+}
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 3rem;              /* 48px -- comfortably over the 44px floor */
+  padding: 0.8rem 1.6rem;
+  border: 1.5px solid transparent;
+  border-radius: var(--r-md);
+  font-family: var(--body);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--lantern);
+  color: var(--shade);
+  border-color: var(--lantern);
+}
+
+.btn-primary:hover { background: #E7BC76; border-color: #E7BC76; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--linen);
+  border-color: rgba(169, 188, 162, 0.42);
+}
+
+.btn-ghost:hover {
+  border-color: var(--lantern);
+  color: var(--lantern);
+}
+
+.clearing .btn-ghost {
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+.clearing .btn-ghost:hover {
+  border-color: var(--lantern-ink);
+  color: var(--lantern-ink);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+
+/* --- Section heading ---------------------------------------------------- */
+.head { max-width: 62ch; margin-bottom: var(--s-5); }
+.head h2 { font-size: var(--t-h2); margin-bottom: var(--s-3); }
+
+/* ==========================================================================
+   5. HEADER
+   ========================================================================== */
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  padding-block: var(--s-3);
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              padding var(--dur) var(--ease);
+  border-bottom: 1px solid transparent;
+}
+
+.site-header.is-stuck {
+  background: rgba(18, 26, 21, 0.92);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom-color: var(--thicket);
+  padding-block: var(--s-2);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+
+/* --- Wordmark ----------------------------------------------------------- */
+.wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--linen);
+  flex: none;
+}
+
+.wordmark-mark {
+  font-family: var(--display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  font-variation-settings: "SOFT" 40, "WONK" 0;
+  line-height: 1;
+}
+
+/* Fraunces' ampersand is an ornate glyph -- at wordmark size it clots into a
+   blob between two heavy Es. Dropping its weight and size and giving it air
+   lets it read as a connector rather than a third letter. */
+.wordmark-mark em {
+  font-style: normal;
+  font-size: 0.78em;
+  font-weight: 400;
+  padding-inline: 0.06em;
+  color: var(--lantern);
+}
+
+.wordmark-sub {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sage);
+  line-height: 1;
+}
+
+/* --- Nav ---------------------------------------------------------------- */
+.nav { display: flex; align-items: center; gap: var(--s-4); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+
+.nav-links a {
+  position: relative;
+  padding-block: 0.35rem;
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--linen);
+  transition: color var(--dur) var(--ease);
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1.5px;
+  background: var(--lantern);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease);
+}
+
+.nav-links a:hover { color: var(--lantern); }
+.nav-links a:hover::after,
+.nav-links a[aria-current="page"]::after { transform: scaleX(1); }
+.nav-links a[aria-current="page"] { color: var(--lantern); }
+
+/* Phone in the header: mono, because it is data. */
+.nav-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.05rem;
+  border: 1.5px solid var(--thicket);
+  border-radius: var(--r-md);
+  background: rgba(26, 38, 32, 0.6);
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--linen);
+  white-space: nowrap;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.nav-phone:hover { border-color: var(--lantern); color: var(--lantern); }
+.nav-phone svg { width: 15px; height: 15px; flex: none; color: var(--lantern); }
+
+/* --- Mobile toggle ------------------------------------------------------ */
+.nav-toggle {
+  display: none;
+  width: 46px; height: 46px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1.5px solid var(--thicket);
+  border-radius: var(--r-md);
+  color: var(--linen);
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  position: relative;
+  display: block;
+  width: 19px; height: 1.5px;
+  background: currentColor;
+  transition: background 120ms linear;
+}
+
+.nav-toggle span::before,
+.nav-toggle span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 19px; height: 1.5px;
+  background: currentColor;
+  transition: transform var(--dur) var(--ease);
+}
+
+.nav-toggle span::before { top: -6px; }
+.nav-toggle span::after  { top: 6px; }
+
+.nav-toggle[aria-expanded="true"] span { background: transparent; }
+.nav-toggle[aria-expanded="true"] span::before { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span::after  { transform: translateY(-6px) rotate(-45deg); }
+
+/* ==========================================================================
+   6. HERO -- the signature
+   --------------------------------------------------------------------------
+   The canopy photograph is not framed in a box. Its lower edge is masked to
+   transparent so the Spanish moss appears to hang down and dissolve into the
+   page itself. That dissolve is the one thing this site should be remembered
+   by, so everything around it stays quiet.
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: min(92svh, 880px);
+  padding-top: 9rem;
+  padding-bottom: var(--s-6);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 56% 38%;
+  /* The dissolve. Held opaque well past halfway so the canopy still reads as
+     a photograph, then released quickly into the page ground. */
+  -webkit-mask-image: linear-gradient(to bottom,
+      #000 0%, #000 64%, rgba(0,0,0,0.5) 84%, transparent 99%);
+          mask-image: linear-gradient(to bottom,
+      #000 0%, #000 64%, rgba(0,0,0,0.5) 84%, transparent 99%);
+}
+
+/* Scrim: heavy on the left where the type sits, releasing to almost nothing
+   on the right so the moss stays legible AS A PHOTOGRAPH. The whole idea
+   depends on being able to see the tree. */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    /* a shaft of warm light through the leaves, upper right */
+    radial-gradient(66% 52% at 76% 6%,
+        rgba(216, 167, 91, 0.16) 0%, transparent 64%),
+    linear-gradient(to right,
+        rgba(18, 26, 21, 0.94) 0%,
+        rgba(18, 26, 21, 0.80) 30%,
+        rgba(18, 26, 21, 0.34) 58%,
+        rgba(18, 26, 21, 0.06) 100%),
+    /* The upper band is held darker than pure atmosphere would need: the mono
+       eyebrow sits at ~22% down, and measured against the brightest sky
+       showing through the canopy it was landing at 4.26:1. */
+    linear-gradient(to bottom,
+        rgba(18, 26, 21, 0.72) 0%,
+        rgba(18, 26, 21, 0.44) 20%,
+        rgba(18, 26, 21, 0.06) 42%,
+        rgba(18, 26, 21, 0.06) 60%,
+        rgba(18, 26, 21, 0.82) 88%,
+        var(--shade) 100%);
+}
+
+.hero-inner { position: relative; max-width: 41rem; }
+
+.hero h1 {
+  font-size: var(--t-hero);
+  font-weight: 600;
+  margin-bottom: var(--s-3);
+}
+
+/* The one phrase that carries the promise gets the gold and the italic. */
+.hero h1 em {
+  font-style: italic;
+  color: var(--lantern);
+  font-variation-settings: "SOFT" 60, "WONK" 1;
+}
+
+.hero .lead { max-width: 46ch; }
+
+.hero-note {
+  margin-top: var(--s-3);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.09em;
+  color: var(--sage);
+  opacity: 0.85;
+}
+
+/* ==========================================================================
+   7. TRUST STRIP
+   ========================================================================== */
+
+.strip {
+  border-block: 1px solid var(--thicket);
+  background: var(--understory);
+}
+
+.strip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--thicket);
+  border-inline: 1px solid var(--thicket);
+}
+
+.strip-item {
+  background: var(--understory);
+  padding: var(--s-4) var(--s-3);
+  text-align: center;
+}
+
+.strip-value {
+  display: block;
+  font-family: var(--display);
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.35rem);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--lantern);
+  font-variation-settings: "SOFT" 30, "WONK" 1;
+}
+
+.strip-label {
+  display: block;
+  margin-top: 0.65rem;
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sage);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   8. SERVICE CARDS
+   --------------------------------------------------------------------------
+   Deliberately NOT numbered. Four services are a set, not a sequence -- the
+   numbering device is saved for the process section, where order is real.
+   ========================================================================== */
+
+/* Four services read as two pairs, not a 3-across row with an orphan. Fixed
+   at two columns rather than auto-fit for exactly that reason. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-3);
+}
+
+@media (max-width: 780px) {
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-4);
+  background: #FFFDF8;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  transition: border-color var(--dur) var(--ease),
+              transform var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--lantern-ink);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px -22px rgba(22, 32, 26, 0.55);
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px; height: 46px;
+  margin-bottom: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--linen-dim);
+  color: var(--lantern-ink);
+  flex: none;
+}
+
+.card-icon svg { width: 22px; height: 22px; }
+
+.card h3 {
+  font-size: var(--t-h3);
+  margin-bottom: 0.7rem;
+  letter-spacing: -0.015em;
+}
+
+.card-body { font-size: var(--t-small); line-height: 1.68; }
+
+.card-list {
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+}
+
+.card-list li {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: var(--linen-dim);
+  border-radius: var(--r-sm);
+  padding: 0.3rem 0.5rem;
+}
+
+/* ==========================================================================
+   9. SPLIT (image + copy)
+   ========================================================================== */
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 1rem + 4vw, 5rem);
+  align-items: center;
+}
+
+.split-media { position: relative; }
+
+/* `height: auto` is load-bearing, not tidiness. The width/height attributes on
+   these <img> tags (which are there to reserve space and stop layout shift)
+   set a used height, and a non-auto height makes the browser ignore
+   aspect-ratio entirely -- the image reserved its full 1375px instead of 682. */
+.split-media img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--r-lg);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.split-media.is-wide img { aspect-ratio: 3 / 2; }
+
+/* Where the copy column runs long (the About story), a centred 4:5 image floats
+   in the middle of the row with dead space above and below it. is-fill takes
+   the image out of flow and lets it fill the full height of the row instead, so
+   the two columns start and end together. Below the split breakpoint the
+   columns stack and it reverts to the normal aspect-ratio behaviour. */
+@media (min-width: 881px) {
+  .split-media.is-fill { align-self: stretch; }
+  .split-media.is-fill picture { display: block; height: 100%; }
+  .split-media.is-fill img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+}
+
+/* A gold hairline that overlaps the image corner -- the only decorative
+   flourish on the page, and it echoes the eyebrow rule. */
+.split-media::after {
+  content: "";
+  position: absolute;
+  inset: auto -0.75rem -0.75rem auto;
+  width: 42%; height: 42%;
+  border-right: 1.5px solid var(--lantern);
+  border-bottom: 1.5px solid var(--lantern);
+  border-bottom-right-radius: var(--r-lg);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.split h2 { font-size: var(--t-h2); margin-bottom: var(--s-3); }
+
+.split-quote {
+  margin-top: var(--s-4);
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--lantern);
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+  font-style: italic;
+  line-height: 1.4;
+  font-variation-settings: "SOFT" 55, "WONK" 1;
+  color: var(--linen);
+}
+
+.clearing .split-quote { color: var(--ink); }
+
+/* ==========================================================================
+   10. PROCESS -- numbering is earned here: this is a real sequence
+   ========================================================================== */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: var(--s-4);
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  padding-top: var(--s-4);
+  border-top: 1.5px solid var(--rule);
+  counter-increment: step;
+}
+
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  display: block;
+  margin-bottom: var(--s-2);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--lantern-ink);
+}
+
+.step h3 {
+  font-size: var(--t-h3);
+  margin-bottom: 0.65rem;
+  letter-spacing: -0.015em;
+}
+
+.step p { font-size: var(--t-small); color: var(--ink-soft); line-height: 1.68; }
+
+/* ==========================================================================
+   11. CTA BAND
+   ========================================================================== */
+
+.cta-band {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  text-align: center;
+}
+
+.cta-band .shell { position: relative; }
+
+.cta-media { position: absolute; inset: 0; z-index: -2; }
+
+.cta-media img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Dark enough for cream type to clear 4.5:1 over the brightest part of the
+   moss, light enough that you can still tell it is a photograph. */
+.cta-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(58% 70% at 50% 45%,
+        rgba(18, 26, 21, 0.86) 0%, rgba(18, 26, 21, 0.62) 100%),
+    linear-gradient(to bottom,
+        var(--shade) 0%, rgba(18, 26, 21, 0.35) 26%,
+        rgba(18, 26, 21, 0.35) 74%, var(--shade) 100%);
+}
+
+.cta-band h2 {
+  font-size: var(--t-h2);
+  margin-bottom: var(--s-3);
+  max-width: 20ch;
+  margin-inline: auto;
+}
+
+.cta-band .lead { margin-inline: auto; text-align: center; }
+.cta-band .btn-row { justify-content: center; }
+
+/* ==========================================================================
+   12. FOOTER
+   ========================================================================== */
+
+.site-footer {
+  background: var(--understory);
+  border-top: 1px solid var(--thicket);
+  padding-block: var(--s-6) var(--s-4);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: var(--s-5) var(--s-4);
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid var(--thicket);
+}
+
+.footer-blurb {
+  margin-top: var(--s-3);
+  font-size: var(--t-small);
+  color: var(--sage);
+  max-width: 34ch;
+}
+
+.footer-col h4 {
+  margin-bottom: var(--s-3);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lantern);
+}
+
+.footer-col li { margin-bottom: 0.7rem; }
+
+.footer-col a {
+  font-size: var(--t-small);
+  text-decoration: none;
+  color: var(--sage);
+  transition: color var(--dur) var(--ease);
+}
+
+.footer-col a:hover { color: var(--lantern); }
+
+.footer-contact { font-family: var(--mono); font-size: 0.8125rem; }
+
+.footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  justify-content: space-between;
+  padding-top: var(--s-4);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.08em;
+  color: var(--sage);
+  opacity: 0.75;
+}
+
+/* ==========================================================================
+   13. PAGE HEADER (interior pages)
+   ========================================================================== */
+
+.page-head {
+  position: relative;
+  padding-top: 10.5rem;
+  padding-bottom: var(--s-6);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.page-head-media { position: absolute; inset: 0; z-index: -2; }
+
+.page-head-media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 96%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 96%);
+}
+
+.page-head-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right,
+      rgba(18,26,21,0.95) 0%, rgba(18,26,21,0.80) 45%, rgba(18,26,21,0.55) 100%);
+}
+
+.page-head h1 {
+  font-size: clamp(2.4rem, 1.5rem + 3.8vw, 4.25rem);
+  margin-bottom: var(--s-3);
+  max-width: 18ch;
+}
+
+.page-head .lead { max-width: 52ch; }
+
+/* ==========================================================================
+   14. CONTACT
+   ========================================================================== */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(2rem, 1rem + 4vw, 4.5rem);
+  align-items: start;
+}
+
+.field { margin-bottom: var(--s-3); }
+
+.field label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.field .req { color: var(--danger); }
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.9rem;
+  background: #FFFDF8;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--r-md);
+  font-family: var(--body);
+  font-size: 1rem;
+  color: var(--ink);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.field textarea { min-height: 8rem; resize: vertical; line-height: 1.6; }
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--lantern-ink);
+  box-shadow: 0 0 0 3px rgba(122, 86, 35, 0.16);
+}
+
+.field-hint {
+  margin-top: 0.4rem;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+
+.form-note {
+  margin-top: var(--s-3);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+/* Aside panel on the contact page */
+.contact-aside {
+  padding: var(--s-4);
+  background: var(--linen-dim);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+}
+
+.contact-aside h3 { font-size: var(--t-h3); margin-bottom: var(--s-3); }
+
+.contact-line {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+  padding-block: var(--s-2);
+  border-top: 1px solid var(--rule);
+}
+
+.contact-line:first-of-type { border-top: 0; }
+
+.contact-line svg {
+  width: 18px; height: 18px;
+  margin-top: 0.28rem;
+  color: var(--lantern-ink);
+  flex: none;
+}
+
+.contact-line-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.15rem;
+}
+
+.contact-line a,
+.contact-line strong {
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.contact-line a:hover { color: var(--lantern-ink); text-decoration: underline; }
+
+/* Emergency callout */
+.urgent {
+  margin-top: var(--s-3);
+  padding: var(--s-3);
+  background: var(--shade);
+  border-radius: var(--r-md);
+  color: var(--linen);
+}
+
+.urgent .contact-line-label { color: var(--lantern); }
+.urgent p { font-size: var(--t-small); color: var(--sage); margin-top: 0.3rem; }
+.urgent a { color: var(--linen); font-family: var(--mono); font-size: 1.05rem; font-weight: 500; text-decoration: none; }
+.urgent a:hover { color: var(--lantern); }
+
+/* ==========================================================================
+   15. MISC BLOCKS
+   ========================================================================== */
+
+/* Two-partner block on the About page */
+.partners {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--s-4);
+}
+
+.partner {
+  padding: var(--s-4);
+  background: var(--understory);
+  border: 1px solid var(--thicket);
+  border-radius: var(--r-lg);
+}
+
+.partner-name {
+  font-family: var(--display);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.3rem;
+  font-variation-settings: "SOFT" 34, "WONK" 0;
+}
+
+.partner-role {
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lantern);
+  margin-bottom: var(--s-3);
+}
+
+.partner p { font-size: var(--t-small); color: var(--sage); line-height: 1.68; }
+
+/* Value list (About) */
+.values { display: grid; gap: var(--s-4); }
+
+.value {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--rule);
+}
+
+.value-key {
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lantern-ink);
+  padding-top: 0.35rem;
+  min-width: 7rem;
+}
+
+.value h3 { font-size: 1.25rem; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+.value p { font-size: var(--t-small); color: var(--ink-soft); }
+
+/* .value is authored for use on linen (About page). This mirrors the same
+   dark-on-shade overrides already used for .lead / .card-body / .btn-ghost,
+   so the same component works dropped into a .shade section (homepage). */
+.shade .value { border-top-color: var(--thicket); }
+.shade .value-key { color: var(--lantern); }
+.shade .value h3 { color: var(--linen); }
+.shade .value p { color: var(--sage); }
+
+/* Pricing cards (Services page). Reuses .card's surface/hover language but
+   leads with a rate instead of an icon -- the number is the whole point. */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+  gap: var(--s-3);
+}
+
+.price-card { display: flex; flex-direction: column; }
+
+.price-rate {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-bottom: 0.2rem;
+  font-family: var(--display);
+  font-size: 2.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--lantern-ink);
+  font-variation-settings: "SOFT" 34, "WONK" 0;
+}
+
+.price-rate small {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.price-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  letter-spacing: -0.01em;
+}
+
+.price-list { margin-top: var(--s-3); display: grid; gap: 0.55rem; }
+
+.price-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.price-list svg { width: 15px; height: 15px; margin-top: 0.2rem; color: var(--lantern-ink); flex: none; }
+
+/* Detailed service block (Services page) */
+.service-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 1rem + 4vw, 4.5rem);
+  align-items: center;
+  padding-block: var(--s-6);
+  border-top: 1px solid var(--thicket);
+}
+
+.clearing .service-block { border-top-color: var(--rule); }
+
+.service-block:first-of-type { border-top: 0; padding-top: 0; }
+
+.service-block h2 { font-size: clamp(1.75rem, 1.3rem + 1.9vw, 2.6rem); margin-bottom: var(--s-3); }
+
+.service-block img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--r-lg);
+}
+
+.service-block.is-flipped .service-block-media { order: -1; }
+
+.checks { margin-top: var(--s-3); display: grid; gap: 0.6rem; }
+
+.checks li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  font-size: var(--t-small);
+  color: var(--sage);
+}
+
+.clearing .checks li { color: var(--ink-soft); }
+
+.checks svg { width: 17px; height: 17px; margin-top: 0.24rem; color: var(--lantern); flex: none; }
+.clearing .checks svg { color: var(--lantern-ink); }
+
+/* FAQ */
+.faq { max-width: var(--narrow); }
+
+.faq details {
+  border-top: 1px solid var(--rule);
+  padding-block: var(--s-3);
+}
+
+.faq details:last-of-type { border-bottom: 1px solid var(--rule); }
+
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: 2.75rem;
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variation-settings: "SOFT" 34, "WONK" 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker { display: none; }
+
+.faq summary::after {
+  content: "";
+  width: 11px; height: 11px;
+  flex: none;
+  border-right: 1.5px solid var(--lantern-ink);
+  border-bottom: 1.5px solid var(--lantern-ink);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform var(--dur) var(--ease);
+}
+
+.faq details[open] summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+
+.faq details p {
+  margin-top: var(--s-2);
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+  max-width: 66ch;
+}
+
+/* ==========================================================================
+   16. MOTION
+   --------------------------------------------------------------------------
+   One idea, applied consistently: content settles upward into place as it
+   enters. Nothing bounces, nothing slides sideways, nothing loops.
+   ========================================================================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 620ms var(--ease), transform 620ms var(--ease);
+}
+
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* ==========================================================================
+   17. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1000px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 880px) {
+  .nav-toggle { display: inline-flex; }
+
+  .nav-links {
+    position: fixed;
+    inset: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 6rem var(--s-4) var(--s-4);
+    background: var(--shade);
+    border-bottom: 1px solid var(--thicket);
+    transform: translateY(-101%);
+    transition: transform 320ms var(--ease);
+    z-index: -1;
+  }
+
+  .nav-links.is-open { transform: none; }
+
+  .nav-links a {
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--thicket);
+    font-size: 1.15rem;
+  }
+
+  .nav-links a::after { display: none; }
+
+  .nav-phone span { display: none; }
+  .nav-phone { padding: 0.7rem; }
+
+  .split,
+  .contact-grid,
+  .service-block { grid-template-columns: 1fr; }
+
+  .split-media { order: -1; }
+  .service-block.is-flipped .service-block-media { order: 0; }
+  .split-media::after { display: none; }
+}
+
+@media (max-width: 620px) {
+  .hero { min-height: auto; padding-top: 8rem; padding-bottom: var(--s-6); }
+  .strip-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .field-row { grid-template-columns: 1fr; }
+  .value { grid-template-columns: 1fr; gap: var(--s-1); }
+  .btn { width: 100%; }
+  .btn-row { flex-direction: column; }
+}
+
+/* ==========================================================================
+   18. REDUCED MOTION + PRINT
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal { opacity: 1; transform: none; }
+}
+
+@media print {
+  .site-header, .nav, .cta-band, .hero-media, .hero-scrim { display: none; }
+  body { background: #fff; color: #000; }
+}
