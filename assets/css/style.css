@@ -4,7 +4,7 @@
    Design direction: "Under the canopy."
 
    Every managed-services site in the category is navy blue. This one is built
-   from the colours of a live oak at dusk -- deep green-black shade, warm bark,
+   from the colors of a live oak at dusk -- deep green-black shade, warm bark,
    and the gold of backlit Spanish moss. The page alternates between SHADE
    (dark, atmospheric, persuasive) and CLEARING (light linen, informational),
    the rhythm of walking a live oak alley.
@@ -20,7 +20,7 @@
    ========================================================================== */
 
 :root {
-  /* --- Colour: the canopy ------------------------------------------------ */
+  /* --- Color: the canopy ------------------------------------------------ */
   --shade:        #121A15;  /* deepest canopy shade -- the page ground       */
   --understory:   #1A2620;  /* raised surface on dark                        */
   --thicket:      #24332B;  /* borders + hover surfaces on dark              */
@@ -29,7 +29,7 @@
   --lantern-ink:  #7A5623;  /* the same gold, dark enough     5.9:1 on linen */
   --bark:         #6E5238;  /* warm brown, used sparingly                    */
 
-  /* --- Colour: the clearing --------------------------------------------- */
+  /* --- Color: the clearing --------------------------------------------- */
   --linen:        #F5F1E7;  /* light section ground                          */
   --linen-dim:    #EAE4D5;  /* alt surface within light sections             */
   --ink:          #16201A;  /* text on linen                 14.8:1 on linen */
@@ -177,7 +177,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .section { padding-block: var(--s-section); position: relative; }
 
 /* The two grounds. Every section declares which world it lives in, and the
-   text colours follow from that -- no per-element overrides needed. */
+   text colors follow from that -- no per-element overrides needed. */
 .shade {
   background: var(--shade);
   color: var(--linen);
@@ -699,11 +699,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 .split-media.is-wide img { aspect-ratio: 3 / 2; }
 
-/* Where the copy column runs long (the About story), a centred 4:5 image floats
+/* Where the copy column runs long (the About story), a centered 4:5 image floats
    in the middle of the row with dead space above and below it. is-fill takes
    the image out of flow and lets it fill the full height of the row instead, so
    the two columns start and end together. Below the split breakpoint the
-   columns stack and it reverts to the normal aspect-ratio behaviour. */
+   columns stack and it reverts to the normal aspect-ratio behavior. */
 @media (min-width: 881px) {
   .split-media.is-fill { align-self: stretch; }
   .split-media.is-fill picture { display: block; height: 100%; }
@@ -1338,11 +1338,26 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
   .nav-links.is-open { transform: none; }
 
+  /* Each choice has to be a block that fills the panel. Left inline, the
+     anchor's tap area is only as wide and tall as its own text, so the row
+     you can see is much bigger than the row that actually responds -- taps
+     land just off the word and do nothing. */
+  .nav-links li { display: block; width: 100%; }
+
   .nav-links a {
-    padding-block: var(--s-3);
+    display: flex;
+    align-items: center;
+    min-height: 3.5rem;       /* comfortably past the 44px thumb minimum */
+    padding-block: var(--s-2);
     border-bottom: 1px solid var(--thicket);
     font-size: 1.15rem;
+    -webkit-tap-highlight-color: rgba(223, 175, 102, 0.18);
   }
+
+  .nav-links li:last-child a { border-bottom: 0; }
+
+  /* Confirms the tap landed, on touch where there is no hover. */
+  .nav-links a:active { color: var(--lantern); }
 
   .nav-links a::after { display: none; }
 

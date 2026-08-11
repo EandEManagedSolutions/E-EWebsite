@@ -121,7 +121,7 @@ about.html          The story, the two partners, how you work
 contact.html        Assessment form + direct contact details
 assets/css/style.css   All styling (one file, commented by section)
 assets/js/main.js      Mobile nav, scroll reveals, form validation
-assets/img/            Web-optimised photos (WebP + JPEG fallback)
+assets/img/            Web-optimized photos (WebP + JPEG fallback)
 .claude/launch.json    Local preview config, safe to delete
 ```
 
@@ -131,7 +131,7 @@ assets/img/            Web-optimised photos (WebP + JPEG fallback)
 
 So you can extend it without it falling apart.
 
-**Colour.** Every competitor in managed IT is navy blue. This is built from a
+**Color.** Every competitor in managed IT is navy blue. This is built from a
 live oak at dusk instead. Tokens live at the top of `style.css`:
 
 | Token | Hex | Use |
@@ -157,7 +157,7 @@ for fills and rules only.
 
 **Structure.** Sections alternate between *shade* (dark, atmospheric — these
 persuade) and *clearing* (light linen — these inform). Add a section by giving
-it `class="section shade"` or `class="section clearing"` and the text colours
+it `class="section shade"` or `class="section clearing"` and the text colors
 follow automatically.
 
 **The signature.** The hero photograph isn't in a box — its lower edge is masked
@@ -190,5 +190,5 @@ Photos are from Unsplash (free to use commercially, no attribution required —
 but it's good manners): Tetiana Sapon, Jonah Townsley, Arthur QJC, Tyler,
 Valentin Lacoste, Albert Stoynov, FLYD.
 
-The switch and padlock photos have been colour-graded into the site palette;
+The switch and padlock photos have been color-graded into the site palette;
 the originals are much bluer and redder respectively.
