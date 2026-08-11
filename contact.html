@@ -72,14 +72,22 @@
         </p>
 
         <!--
-          SETUP NOTE — the form needs somewhere to post.
-          This is a static site, so there's no server to receive it. Two easy
-          options, both free at this volume:
-            1. Formspree  — sign up, then set action="https://formspree.io/f/YOURID"
-            2. Netlify Forms — if hosting on Netlify, add: netlify data-netlify="true"
-          Until one is set up, the form validates but goes nowhere.
+          Posts to Formspree (free static-site form backend). Submissions land
+          in the Formspree dashboard and are forwarded to the address on the
+          account. With JavaScript on, main.js sends it in the background and
+          shows the reply below the button; with JavaScript off the browser
+          posts it normally and Formspree shows its own thank-you page.
         -->
-        <form data-validate action="#REPLACE-WITH-YOUR-FORM-ENDPOINT" method="POST">
+        <form data-validate action="https://formspree.io/f/mgawkvzn" method="POST">
+
+          <!-- Sets the subject line on the notification email. -->
+          <input type="hidden" name="_subject" value="New assessment request — eandemanagedsolutions.com">
+
+          <!-- Honeypot: hidden from people, catches most bots. -->
+          <div class="hp" aria-hidden="true">
+            <label for="company-url">Leave this empty</label>
+            <input type="text" id="company-url" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
 
           <div class="field-row">
             <div class="field">
@@ -127,6 +135,8 @@
           </div>
 
           <button class="btn btn-primary" type="submit">Send it over</button>
+
+          <p class="form-status" data-form-status role="status" aria-live="polite" hidden></p>
 
           <p class="form-note">
             We'll only use this to reply. No newsletters, and we don't pass

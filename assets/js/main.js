@@ -108,7 +108,9 @@
   /* --- Contact form ------------------------------------------------------
      Uses the browser's own constraint validation; this only takes over the
      messaging so errors appear next to the field instead of in a tooltip
-     that vanishes. The form still posts normally when valid.
+     that vanishes. Once valid, the form is posted to its action (Formspree)
+     in the background so nobody is thrown onto a third-party page. If fetch
+     is unavailable the browser posts it the ordinary way instead.
      --------------------------------------------------------------------- */
   var form = document.querySelector("[data-validate]");
 
@@ -157,6 +159,89 @@
       return "Please check this field.";
     };
 
+    /* Background submit --------------------------------------------------- */
+    var statusNote  = form.querySelector("[data-form-status]");
+    var submitBtn   = form.querySelector("[type=submit]");
+    var submitLabel = submitBtn ? submitBtn.textContent : "";
+    var canPostInBackground = typeof window.fetch === "function" && "FormData" in window;
+    var sending = false;
+
+    var fallbackEmail = "support@eandemanagedsolutions.com";
+
+    var setStatus = function (message, ok) {
+      if (!statusNote) return;
+      statusNote.textContent = message;
+      statusNote.classList.toggle("is-ok", ok);
+      statusNote.classList.toggle("is-error", !ok);
+      statusNote.hidden = false;
+      statusNote.scrollIntoView({
+        block: "nearest",
+        behavior: reduceMotion ? "auto" : "smooth"
+      });
+    };
+
+    // Formspree replies with { errors: [{ field, message }] } when it refuses.
+    var reasonFrom = function (data) {
+      if (data && data.errors && data.errors.length && data.errors[0].message) {
+        return data.errors[0].message;
+      }
+      return "";
+    };
+
+    var send = function () {
+      if (sending) return;
+      sending = true;
+
+      if (statusNote) statusNote.hidden = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending…";
+      }
+
+      var done = function () {
+        sending = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitLabel;
+        }
+      };
+
+      window.fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" }
+      })
+        .then(function (res) {
+          return res.json()
+            .catch(function () { return {}; })
+            .then(function (data) { return { ok: res.ok, data: data }; });
+        })
+        .then(function (result) {
+          done();
+
+          if (result.ok) {
+            form.reset();
+            setStatus(
+              "Thanks — that's with us. You'll hear back from one of us, usually the same day.",
+              true
+            );
+          } else {
+            setStatus(
+              reasonFrom(result.data) ||
+                "Something went wrong at our end. Please try again, or email us at " + fallbackEmail + ".",
+              false
+            );
+          }
+        })
+        .catch(function () {
+          done();
+          setStatus(
+            "That didn't send — check your connection and try again, or email us at " + fallbackEmail + ".",
+            false
+          );
+        });
+    };
+
     form.setAttribute("novalidate", "");
 
     form.addEventListener("submit", function (e) {
@@ -180,7 +265,13 @@
           block: "center",
           behavior: reduceMotion ? "auto" : "smooth"
         });
+        return;
       }
+
+      if (!canPostInBackground) return; // let the browser post it normally
+
+      e.preventDefault();
+      send();
     });
 
     // Clear an error as soon as the person fixes it.
