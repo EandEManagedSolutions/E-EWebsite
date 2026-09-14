@@ -42,30 +42,17 @@ every instance:
   health checks during visits instead. If you stand up real monitoring
   tooling later, `services.html` (Managed IT bullet 2) is the place to
   upgrade that claim back to something continuous.
-- **Pricing:** $85/hr remote, $100/hr on-site, custom-quoted monthly
-  packages, fixed-price quotes for projects. Full breakdown lives in a new
-  **Pricing section on `services.html`** (`#pricing`), linked from the
-  homepage, footer, and services FAQ.
+- **Pricing:** $100/hr flat, in person or online, half-hour minimum;
+  custom-quoted monthly packages; fixed-price quotes for projects; free quote
+  and assessment. Full breakdown lives in the **Pricing section on
+  `services.html`** (`#pricing`), linked from the homepage, footer, nav bar,
+  and services FAQ.
 - Month-to-month, 30 days' notice; you get full account/credential handover if
   a client leaves. Unchanged from before — still worth a final gut-check.
-
-### Pricing details I made a judgment call on
-
-I filled these in with reasonable defaults since you hadn't specified them.
-They're in the Pricing section on `services.html` (search `SETUP NOTE` in that
-file to find the exact spot) — check them against what you actually want to
-charge:
-
-- **Remote support** billed in **15-minute increments**, no minimum.
-- **On-site support** has a **1-hour minimum**, then 15-minute increments.
-- On-site pricing **covers travel anywhere in South Louisiana** with no
-  separate trip fee. If you want a mileage cutoff or a trip charge past a
-  certain distance, add it here.
 - **Monthly care plans** are deliberately **not** given a specific number —
   the copy says "quoted after assessment" rather than inventing a per-seat
-  rate I have no basis for. That's a real, common MSP pattern (price after
-  auditing device/user count), not a placeholder — but if you'd rather post a
-  starting price (e.g. "from $X/user/month"), tell me and I'll add it.
+  rate. If you'd rather post a starting price (e.g. "from $X/user/month"),
+  update the Pricing section on `services.html`.
 
 ---
 
